@@ -30,7 +30,7 @@ case class ApplicationIdea(
   }
 
   def updateIssue(issue: ApplicationIssue) {
-
+    issues.update(issues.findIndexOf(target => target.issueId == issue.issueId), issue)
   }
 }
 
