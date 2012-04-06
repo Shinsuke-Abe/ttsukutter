@@ -22,7 +22,7 @@ case class ApplicationIdea(
                             ideamanId: Long,
                             description: String,
                             issues: ListBuffer[ApplicationIssue] = ListBuffer.empty) {
-  def issueExecute(issue: ApplicationIssue, executor: ApplicationIssue => Unit) {
+  private def issueExecute(issue: ApplicationIssue, executor: ApplicationIssue => Unit) {
     ApplicationIssueSpec.isSatisfiedBy(issue) match {
       case SpecificateSuccess => executor(issue)
       case notSatisfied => throw new ApplicationIssueSpecificateException(notSatisfied.message)
