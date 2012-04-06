@@ -9,7 +9,8 @@ object ApplicationBuild extends Build {
 
     val appDependencies = Seq(
       // Add your project dependencies here,
-      "org.twitter4j" % "twitter4j-core" % "[2.2,)"
+      "org.twitter4j" % "twitter4j-core" % "[2.2,)",
+      "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
