@@ -22,15 +22,22 @@ case class ApplicationIdea(
                             ideamanId: Long,
                             description: String,
                             issues: ListBuffer[ApplicationIssue] = ListBuffer.empty) {
-  def addIssue(issue: ApplicationIssue) {
+  def issueExecute(issue: ApplicationIssue, executor: ApplicationIssue => Unit) {
     ApplicationIssueSpec.isSatisfiedBy(issue) match {
-      case SpecificateSuccess => issues += issue
+      case SpecificateSuccess => executor(issue)
       case notSatisfied => throw new ApplicationIssueSpecificateException(notSatisfied.message)
     }
   }
 
+  def addIssue(issue: ApplicationIssue) {
+    issueExecute(issue, {issues += _})
+  }
+
   def updateIssue(issue: ApplicationIssue) {
-    issues.update(issues.findIndexOf(target => target.issueId == issue.issueId), issue)
+    issueExecute(
+      issue,
+      {newValue => issues.update(issues.findIndexOf(target => target.issueId == newValue.issueId), newValue)}
+    )
   }
 }
 
