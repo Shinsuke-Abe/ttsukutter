@@ -1,4 +1,4 @@
-package models
+package models.manageuser
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,4 +1,4 @@
-package models
+package models.manageuser
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,20 +13,20 @@ import scala.collection.mutable._
 case class TTUser(
                    id: Option[Long] = None,
                    name: String,
-                   profile: String,
+                   profile: Option[String] = None,
                    authInfo: TTUserAuthInfo,
                    userSiteList: ListBuffer[TTUserSite] = ListBuffer.empty,
                    favoriteList: ListBuffer[TTUserFavorite] = ListBuffer.empty) {
-  def add {
-
+  def addFavoriteIdea(ideaId: Long) {
+    favoriteList += new TTUserFavorite(ideaId, favoriteList.length + 1)
   }
 
-  def update {
-
+  def addUserSite(url: String) {
+    userSiteList += new TTUserSite(userSiteList.length + 1, url)
   }
 }
 
-case class TTUserFavorite(ideaId: Int, seqNo: Int)
+case class TTUserFavorite(ideaId: Long, seqNo: Int)
 
 case class TTUserSite(dispNo: Int, url: String)
 
@@ -35,17 +35,8 @@ case class TTUserAuthInfo(authType: Int,
                           accessToken: Option[String] = None,
                           tokenSecret: Option[String] = None)
 
-object TTUserFactory {
+object TTUser {
   def get(userId: Long) = {
-    //new TTUser
-  }
-
-  def create(
-              name: String,
-              profile: String,
-              authInfo: TTUserAuthInfo,
-              userSiteList: ListBuffer[TTUserSite] = ListBuffer.empty,
-              favoriteList: ListBuffer[TTUserFavorite] = ListBuffer.empty) = {
     //new TTUser
   }
 }
