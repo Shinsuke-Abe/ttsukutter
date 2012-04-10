@@ -15,20 +15,42 @@ case class TTUser(
                    name: String,
                    profile: Option[String] = None,
                    authInfo: TTUserAuthInfo,
-                   userSiteList: ListBuffer[TTUserSite] = ListBuffer.empty,
-                   favoriteList: ListBuffer[TTUserFavorite] = ListBuffer.empty) {
+                   var userSiteList: ListBuffer[TTUserSite] = ListBuffer.empty,
+                   var favoriteList: ListBuffer[TTUserFavorite] = ListBuffer.empty) {
   def addFavoriteIdea(ideaId: Long) {
-    favoriteList += new TTUserFavorite(ideaId, favoriteList.length + 1)
+    favoriteList += new TTUserFavorite(dispNo = favoriteList.length + 1, ideaId = ideaId)
+  }
+
+  def removeFavoriteIdea(ideaId: Long) {
+    favoriteList.remove(favoriteList.findIndexOf(_.ideaId == ideaId))
+    renumberFavoriteList
+  }
+
+  def changeDispNoFavoriteIdea(ideaId: Long, destDispNo: Int) {
+    // insertを使う
+  }
+
+  private def renumberFavoriteList {
+    favoriteList = favoriteList.zipWithIndex.map(x => new TTUserFavorite(dispNo = x._2 + 1, ideaId = x._1.ideaId))
   }
 
   def addUserSite(url: String) {
-    userSiteList += new TTUserSite(userSiteList.length + 1, url)
+    userSiteList += new TTUserSite(dispNo = userSiteList.length + 1, url = url)
+  }
+
+  def removeUserSite(url: String) {
+    userSiteList.remove(userSiteList.findIndexOf(_.url == url))
+    renumberUserSiteList
+  }
+
+  private def renumberUserSiteList {
+    userSiteList = userSiteList.zipWithIndex.map(x => new TTUserSite(dispNo = x._2 + 1, url = x._1.url))
   }
 }
 
-case class TTUserFavorite(ideaId: Long, seqNo: Int)
+case class TTUserFavorite(id: Option[Int] = None, dispNo: Int, ideaId: Long)
 
-case class TTUserSite(dispNo: Int, url: String)
+case class TTUserSite(id: Option[Int] = None, dispNo: Int, url: String)
 
 case class TTUserAuthInfo(authType: Int,
                           password: Option[String] = None,
