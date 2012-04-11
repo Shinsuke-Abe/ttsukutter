@@ -22,19 +22,3 @@ case class SpecificateResult(result: Boolean, message: String) {
 }
 
 object SpecificateSuccess extends SpecificateResult(true, "")
-
-class StringNotNothingSpec(name: String) extends TTSpecification[String] {
-  override def isSatisfiedBy(target: String) = {
-    target match {
-      case "" => SpecificateResult(false, name + " is nothing")
-      case null => SpecificateResult(false, name + " is null")
-      case _ => SpecificateSuccess
-    }
-  }
-}
-
-object StringNotNothingSpec {
-  def apply(name: String, target: String) = {
-    (new StringNotNothingSpec(name)).isSatisfiedBy(target)
-  }
-}
