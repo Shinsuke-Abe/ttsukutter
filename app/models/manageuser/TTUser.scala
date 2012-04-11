@@ -36,7 +36,6 @@ case class TTUser(
       }
       case _ =>
     }
-
   }
 
   private def renumberFavoriteList {
@@ -50,6 +49,18 @@ case class TTUser(
   def removeUserSite(url: String) {
     userSiteList.remove(userSiteList.findIndexOf(_.url == url))
     renumberUserSiteList
+  }
+
+  def changeDispNoUserSite(url: String, destDispNo: Int) {
+    val newIndex = calculateNewIndex(destDispNo, userSiteList.length)
+    userSiteList.find(_.url == url) match {
+      case Some(moveUserSite) => {
+        userSiteList = userSiteList.filter(_.url != url)
+        userSiteList.insert(newIndex, moveUserSite)
+        renumberUserSiteList
+      }
+      case _ =>
+    }
   }
 
   private def renumberUserSiteList {
