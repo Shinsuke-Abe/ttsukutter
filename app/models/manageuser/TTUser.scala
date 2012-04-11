@@ -27,7 +27,16 @@ case class TTUser(
   }
 
   def changeDispNoFavoriteIdea(ideaId: Long, destDispNo: Int) {
-    // insertを使う
+    val newIndex = calculateNewIndex(destDispNo, favoriteList.length)
+    favoriteList.find(_.ideaId == ideaId) match {
+      case Some(moveFavorite) => {
+        favoriteList = favoriteList.filter(_.ideaId != ideaId)
+        favoriteList.insert(newIndex, moveFavorite)
+        renumberFavoriteList
+      }
+      case _ =>
+    }
+
   }
 
   private def renumberFavoriteList {
@@ -45,6 +54,12 @@ case class TTUser(
 
   private def renumberUserSiteList {
     userSiteList = userSiteList.zipWithIndex.map(x => new TTUserSite(dispNo = x._2 + 1, url = x._1.url))
+  }
+
+  private def calculateNewIndex(destNo: Int, listSize: Int) = {
+    if (destNo < 1) 0
+    else if (destNo > listSize) listSize - 1
+    else destNo - 1
   }
 }
 
