@@ -7,3 +7,6 @@ tmp
 dist
 ttsukutter.iml
 test
+.settings
+.project
+.classpath
