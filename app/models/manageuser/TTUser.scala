@@ -9,6 +9,7 @@ package models.manageuser
  */
 
 import scala.collection.mutable._
+import models.specs._
 
 case class TTUser(
                    id: Option[Long] = None,
@@ -17,6 +18,16 @@ case class TTUser(
                    authInfo: TTUserAuthInfo,
                    var userSiteList: ListBuffer[TTUserSite] = ListBuffer.empty,
                    var favoriteList: ListBuffer[TTUserFavorite] = ListBuffer.empty) {
+  authInfo match {
+	  case regularAuth: RegularAuthInfo =>{
+	    RegularAuthInfoSpec.isSatisfiedBy(regularAuth) match {
+	      case SpecificateSuccess =>
+	      case notSatisfied => throw new RegularAuthSpecificateException(notSatisfied.message)
+	    }
+	  }
+	  case oAuthInfo: OAuthInfo =>
+	}
+  
   def addFavoriteIdea(ideaId: Long) {
     favoriteList += new TTUserFavorite(dispNo = favoriteList.length + 1, ideaId = ideaId)
   }
@@ -78,13 +89,23 @@ case class TTUserFavorite(id: Option[Int] = None, dispNo: Int, ideaId: Long)
 
 case class TTUserSite(id: Option[Int] = None, dispNo: Int, url: String)
 
-case class TTUserAuthInfo(authType: Int,
-                          password: Option[String] = None,
-                          accessToken: Option[String] = None,
-                          tokenSecret: Option[String] = None)
+abstract class TTUserAuthInfo()
+
+case class OAuthInfo(accessToken: String, tokenSecret: String) extends TTUserAuthInfo
+
+case class RegularAuthInfo(mailAddress: String, passrowd: String) extends TTUserAuthInfo
 
 object TTUser {
   def get(userId: Long) = {
     //new TTUser
   }
 }
+
+object RegularAuthInfoSpec extends TTSpecification[RegularAuthInfo] {
+  override def isSatisfiedBy(target: RegularAuthInfo) = {
+    StringNotNothingSpec("EMail Address", target.mailAddress) and
+    StringNotNothingSpec("Password", target.passrowd)
+  }
+}
+
+class RegularAuthSpecificateException(s: String = null) extends Exception(s: String)
