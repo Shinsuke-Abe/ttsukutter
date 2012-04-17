@@ -80,32 +80,13 @@ case class TTUser(
   }
 }
 
-case class TTUserFavorite(id: Option[Int] = None, dispNo: Int, ideaId: Long)
-
-case class TTUserSite(id: Option[Int] = None, dispNo: Int, url: String)
-
-abstract class TTUserAuthInfo()
-
-case class OAuthInfo(accessToken: String, tokenSecret: String) extends TTUserAuthInfo
-
-case class RegularAuthInfo(mailAddress: String, passrowd: String) extends TTUserAuthInfo
-
 object TTUser {
   def get(userId: Long) = {
     //new TTUser
   }
 }
 
-object RegularAuthInfoSpec extends TTSpecification[RegularAuthInfo] {
-  override def isSatisfiedBy(target: RegularAuthInfo) = {
-    StringNotNothingSpec("EMail Address", target.mailAddress) and
-    StringNotNothingSpec("Password", target.passrowd)
-  }
-}
+case class TTUserFavorite(id: Option[Int] = None, dispNo: Int, ideaId: Long)
 
-object OAuthInfoSpec extends TTSpecification[OAuthInfo] {
-  override def isSatisfiedBy(target: OAuthInfo) = {
-    StringNotNothingSpec("Access Token", target.accessToken) and
-    StringNotNothingSpec("Token Secret", target.tokenSecret)
-  }
-}
+case class TTUserSite(id: Option[Int] = None, dispNo: Int, url: String)
+
