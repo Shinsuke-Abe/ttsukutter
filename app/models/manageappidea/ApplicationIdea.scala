@@ -9,10 +9,7 @@ case class ApplicationIdea(
                             description: String,
                             issues: ListBuffer[ApplicationIssue] = ListBuffer.empty) {
   private def issueExecute(issue: ApplicationIssue, executor: ApplicationIssue => Unit) {
-    ApplicationIssueSpec.isSatisfiedBy(issue) match {
-      case SpecificateSuccess => executor(issue)
-      case notSatisfied => throw new ApplicationIssueSpecificateException(notSatisfied.message)
-    }
+    ApplicationIssueSpec isSatisfiedBy(issue) andThen executor(issue)
   }
 
   def addIssue(issue: ApplicationIssue) {

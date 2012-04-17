@@ -4,6 +4,8 @@ trait TTSpecification[A] {
   def isSatisfiedBy(target: A): SpecificateResult
 }
 
+class TTSpecificateException(s: String) extends Exception(s: String)
+
 case class SpecificateResult(result: Boolean, message: String) {
   def and(other: SpecificateResult) = {
     if (this.result == false) this
@@ -18,6 +20,11 @@ case class SpecificateResult(result: Boolean, message: String) {
 
   def not = {
     SpecificateResult(!this.result, this.message)
+  }
+  
+  def andThen(f: => Unit) {
+    if (result) f
+    else throw new TTSpecificateException(message)
   }
 }
 

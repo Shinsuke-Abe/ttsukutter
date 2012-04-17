@@ -19,18 +19,8 @@ case class TTUser(
                    var userSiteList: ListBuffer[TTUserSite] = ListBuffer.empty,
                    var favoriteList: ListBuffer[TTUserFavorite] = ListBuffer.empty) {
   authInfo match {
-	  case regularAuth: RegularAuthInfo =>{
-	    RegularAuthInfoSpec.isSatisfiedBy(regularAuth) match {
-	      case SpecificateSuccess =>
-	      case notSatisfied => throw new RegularAuthInfoSpecificateException(notSatisfied.message)
-	    }
-	  }
-	  case oAuthInfo: OAuthInfo => {
-	    OAuthInfoSpec.isSatisfiedBy(oAuthInfo) match {
-	      case SpecificateSuccess =>
-	      case notSatisfied => throw new OAuthInfoSpecificateException(notSatisfied.message)
-	    }
-	  }
+	  case regularAuth: RegularAuthInfo => RegularAuthInfoSpec isSatisfiedBy(regularAuth) andThen()
+	  case oAuthInfo: OAuthInfo => OAuthInfoSpec isSatisfiedBy(oAuthInfo) andThen()
 	}
   
   def addFavoriteIdea(ideaId: Long) {
@@ -115,9 +105,7 @@ object RegularAuthInfoSpec extends TTSpecification[RegularAuthInfo] {
 
 object OAuthInfoSpec extends TTSpecification[OAuthInfo] {
   override def isSatisfiedBy(target: OAuthInfo) = {
-    StringNotNothingSpec("Access Token", target.accessToken)
+    StringNotNothingSpec("Access Token", target.accessToken) and
+    StringNotNothingSpec("Token Secret", target.tokenSecret)
   }
 }
-
-class RegularAuthInfoSpecificateException(s: String = null) extends Exception(s: String)
-class OAuthInfoSpecificateException(s: String = null) extends Exception(s: String)
