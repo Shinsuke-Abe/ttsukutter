@@ -22,10 +22,15 @@ case class TTUser(
 	  case regularAuth: RegularAuthInfo =>{
 	    RegularAuthInfoSpec.isSatisfiedBy(regularAuth) match {
 	      case SpecificateSuccess =>
-	      case notSatisfied => throw new RegularAuthSpecificateException(notSatisfied.message)
+	      case notSatisfied => throw new RegularAuthInfoSpecificateException(notSatisfied.message)
 	    }
 	  }
-	  case oAuthInfo: OAuthInfo =>
+	  case oAuthInfo: OAuthInfo => {
+	    OAuthInfoSpec.isSatisfiedBy(oAuthInfo) match {
+	      case SpecificateSuccess =>
+	      case notSatisfied => throw new OAuthInfoSpecificateException(notSatisfied.message)
+	    }
+	  }
 	}
   
   def addFavoriteIdea(ideaId: Long) {
@@ -108,4 +113,11 @@ object RegularAuthInfoSpec extends TTSpecification[RegularAuthInfo] {
   }
 }
 
-class RegularAuthSpecificateException(s: String = null) extends Exception(s: String)
+object OAuthInfoSpec extends TTSpecification[OAuthInfo] {
+  override def isSatisfiedBy(target: OAuthInfo) = {
+    StringNotNothingSpec("Access Token", target.accessToken)
+  }
+}
+
+class RegularAuthInfoSpecificateException(s: String = null) extends Exception(s: String)
+class OAuthInfoSpecificateException(s: String = null) extends Exception(s: String)
