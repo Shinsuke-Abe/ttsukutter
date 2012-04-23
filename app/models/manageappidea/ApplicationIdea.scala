@@ -13,22 +13,23 @@ case class ApplicationIdea(
   }
 
   def addIssue(issue: ApplicationIssue) {
-    issueExecute(issue, {issues += _})
+    var addIssue = ApplicationIssue(Some(issues.length + 1), issue.description, issue.url, issue.craftmanId)
+    issueExecute(issue, {_ => issues += addIssue})
   }
 
   def updateIssue(issue: ApplicationIssue) {
     issueExecute(
       issue,
-      {newValue => issues.update(issues.findIndexOf(target => target.issueId == newValue.issueId), newValue)}
+      {newValue => issues.update(issues.findIndexOf(target => target.seqNo == newValue.seqNo), newValue)}
     )
   }
 }
 
 case class ApplicationIssue(
-                             issueId: Option[Long] = None,
+                             seqNo: Option[Int] = None,
                              description: String,
                              url: String,
-                             craftmanId: Long) {
+                             craftmanId: Int) {
 }
 
 object ApplicationIdea {
