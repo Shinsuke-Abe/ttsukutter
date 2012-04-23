@@ -10,3 +10,4 @@ test
 .settings
 .project
 .classpath
+/.cache
