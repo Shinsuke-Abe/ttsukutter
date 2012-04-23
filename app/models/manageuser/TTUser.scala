@@ -12,7 +12,7 @@ import scala.collection.mutable._
 import models.specs._
 
 case class TTUser(
-                   id: Option[Long] = None,
+                   id: Option[Int] = None,
                    name: String,
                    profile: Option[String] = None,
                    authInfo: TTUserAuthInfo,
