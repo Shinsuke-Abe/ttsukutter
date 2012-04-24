@@ -7,13 +7,13 @@ trait TTSpecification[A] {
 class TTSpecificateException(s: String) extends Exception(s: String)
 
 case class SpecificateResult(result: Boolean, message: String) {
-  def and(other: SpecificateResult) = {
+  def and(other: => SpecificateResult) = {
     if (this.result == false) this
     else if (other.result == false) other
     else SpecificateSuccess
   }
 
-  def or(other: SpecificateResult) = {
+  def or(other: => SpecificateResult) = {
     if (this.result && other.result) SpecificateSuccess
     else SpecificateResult(false, this.message + ":" + other.message)
   }
