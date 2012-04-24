@@ -75,7 +75,8 @@ object ApplicationIdeaRepository {
 
 object ApplicationIdeaSpec extends TTSpecification[ApplicationIdea] {
   override def isSatisfiedBy(target: ApplicationIdea) = {
-    StringNotNothingSpec("Description", target.description)
+    StringNotNothingSpec("Description", target.description) and
+    	StringLengthSpec(maxLength = 140, name = "Description", target = target.description)
   }
 }
 
