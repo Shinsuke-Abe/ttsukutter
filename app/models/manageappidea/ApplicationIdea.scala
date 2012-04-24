@@ -8,6 +8,8 @@ case class ApplicationIdea(
                             ideamanId: Long,
                             description: String,
                             issues: ListBuffer[ApplicationIssue] = ListBuffer.empty) {
+  ApplicationIdeaSpec isSatisfiedBy(this) andThen()
+  
   private def issueExecute(issue: ApplicationIssue, executor: ApplicationIssue => Unit) {
     ApplicationIssueSpec isSatisfiedBy(issue) andThen executor(issue)
   }
@@ -71,11 +73,15 @@ object ApplicationIdeaRepository {
   }
 }
 
+object ApplicationIdeaSpec extends TTSpecification[ApplicationIdea] {
+  override def isSatisfiedBy(target: ApplicationIdea) = {
+    StringNotNothingSpec("Description", target.description)
+  }
+}
+
 object ApplicationIssueSpec extends TTSpecification[ApplicationIssue] {
   override def isSatisfiedBy(target: ApplicationIssue) = {
     StringNotNothingSpec("Description", target.description) and
       StringNotNothingSpec("URL", target.url)
   }
 }
-
-class ApplicationIssueSpecificateException(s: String = null) extends Exception(s: String)
