@@ -83,6 +83,8 @@ object ApplicationIdeaSpec extends TTSpecification[ApplicationIdea] {
 object ApplicationIssueSpec extends TTSpecification[ApplicationIssue] {
   override def isSatisfiedBy(target: ApplicationIssue) = {
     StringNotNothingSpec("Description", target.description) and
-      StringNotNothingSpec("URL", target.url)
+      StringLengthSpec(maxLength = 140, name = "Description", target = target.description) and
+      StringNotNothingSpec("URL", target.url) and
+      StringLengthSpec(maxLength = 1024, name = "URL", target = target.url)
   }
 }
