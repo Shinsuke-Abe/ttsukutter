@@ -10,6 +10,7 @@ package models.manageuser
 
 import scala.collection.mutable._
 import models.specs._
+import utils.exceptions.TTsukutterAppException
 
 case class TTUser(
                    id: Option[Int] = None,
@@ -24,6 +25,7 @@ case class TTUser(
 	}
   
   def addFavoriteIdea(ideaId: Long) {
+    if (favoriteList.exists(_.ideaId == ideaId)) throw new TTsukutterAppException("Added application idea: " + ideaId)
     favoriteList += new TTUserFavorite(dispNo = favoriteList.length + 1, ideaId = ideaId)
   }
 
@@ -49,7 +51,9 @@ case class TTUser(
   }
 
   def addUserSite(url: String) {
-    userSiteList += new TTUserSite(dispNo = userSiteList.length + 1, url = url)
+    StringNotNothingSpec("User Site", url) andThen{
+    	userSiteList += new TTUserSite(dispNo = userSiteList.length + 1, url = url)
+    }
   }
 
   def removeUserSite(url: String) {
