@@ -2,6 +2,10 @@ package models.manageappidea
 
 import models.specs._
 import scala.collection.mutable._
+import anorm._
+import anorm.SqlParser._
+import play.api.db._
+import play.api.Play.current
 
 case class ApplicationIdea(
                             ideaId: Option[Long] = None,
@@ -35,10 +39,42 @@ case class ApplicationIssue(
 }
 
 object ApplicationIdea {
-
-  def get(id: Long) = {
-    // TODO データベースからの取得
-    //new ApplicationIdea
+  val applicationIdea = {
+    get[Long]("IDEA_ID") ~
+    get[Long]("IDEAMAN_ID") ~
+    get[String]("IDEA_DESCRIPTION") map {
+      case ideaId ~ ideamanId ~ ideaDescription =>
+        ApplicationIdea(Some(ideaId), ideamanId, ideaDescription)
+    }
+  }
+  
+  def create(appIdea: ApplicationIdea) {
+    DB.withConnection { implicit c =>
+      SQL("""
+    	insert into T_APPLICATION_IDEA (
+    		IDEA_ID,
+      		IDEAMAN_ID,
+      		IDEA_DESCRIPTION)
+      	values (
+      		{ideaId},
+      		{ideamanId},
+      		{ideaDescription})""")
+      	.on(
+      	    'ideaId -> appIdea.ideaId.get,
+      	    'ideamanId -> appIdea.ideamanId,
+      	    'ideaDescription -> appIdea.description)
+      	.executeUpdate()
+    }
+  }
+  
+  def findById(id: Long) = {
+    (DB.withConnection {implicit c =>
+      SQL("""
+          select * from T_APPLICATION_IDEA
+          where IDEA_ID = {ideaId}""")
+      .on('ideaId -> id)
+      .as(applicationIdea *)
+    }).head
   }
 }
 
@@ -62,10 +98,6 @@ object ApplicationIdeaRepository {
     // TODO 検索条件の分割
     // TODO データベースからの取得
     List()
-  }
-
-  def add(appIdea: ApplicationIdea) {
-    // TODO INSERT文の発行
   }
 
   def update(appIdea: ApplicationIdea) {
