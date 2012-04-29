@@ -21,9 +21,9 @@ CREATE TABLE T_APPLICATION_IDEA
 CREATE TABLE T_APPLICATION_ISSUE
 (
 	-- アプリネタIDで、トランザクションを一意に判別するIDで、Twitterから取得したTweetIDをそのまま利用する。
-	IDEA_ID BIGINT NOT NULL UNIQUE,
+	IDEA_ID BIGINT NOT NULL,
 	-- 公開されたアプリケーションのIDで、連番で設定する。
-	SEQ_NO BIGINT NOT NULL UNIQUE,
+	SEQ_NO INT NOT NULL,
 	-- アプリケーションの概要で、ユーザが登録する。
 	ISSUE_DESCLIPTION VARCHAR(140),
 	-- 公開アプリのURLを格納する。
