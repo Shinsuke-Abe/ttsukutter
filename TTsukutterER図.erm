@@ -113,7 +113,7 @@
 			</connections>
 			<display>false</display>
 			<creation_date>2012-04-19 23:05:08</creation_date>
-			<updated_date>2012-04-26 23:35:11</updated_date>
+			<updated_date>2012-04-29 07:43:40</updated_date>
 			<model_property>
 				<name>プロジェクト名</name>
 				<value></value>
@@ -236,7 +236,7 @@
 			<description>公開されたアプリケーションのIDで、連番で設定する。</description>
 			<logical_name>公開連番</logical_name>
 			<physical_name>SEQ_NO</physical_name>
-			<type>bigint</type>
+			<type>integer</type>
 		</word>
 	</dictionary>
 	<tablespace_set>
@@ -424,7 +424,7 @@
 					<foreign_key>true</foreign_key>
 					<not_null>true</not_null>
 					<primary_key>true</primary_key>
-					<unique_key>true</unique_key>
+					<unique_key>false</unique_key>
 					<character_set></character_set>
 					<collation></collation>
 					<sequence>
@@ -449,14 +449,14 @@
 					<unique_key_name></unique_key_name>
 					<logical_name></logical_name>
 					<physical_name></physical_name>
-					<type>bigint</type>
+					<type>integer</type>
 					<constraint></constraint>
 					<default_value></default_value>
 					<auto_increment>false</auto_increment>
 					<foreign_key>false</foreign_key>
 					<not_null>true</not_null>
 					<primary_key>true</primary_key>
-					<unique_key>true</unique_key>
+					<unique_key>false</unique_key>
 					<character_set></character_set>
 					<collation></collation>
 					<sequence>
