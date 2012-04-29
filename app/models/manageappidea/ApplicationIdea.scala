@@ -1,80 +1,37 @@
 package models.manageappidea
 
 import models.specs._
-import scala.collection.mutable._
 import anorm._
 import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
+import utils.exceptions.TTsukutterAppException
 
+// domain layer
 case class ApplicationIdea(
                             ideaId: Option[Long] = None,
                             ideamanId: Long,
                             description: String,
-                            issues: ListBuffer[ApplicationIssue] = ListBuffer.empty) {
+                            var issues: List[ApplicationIssue] = List.empty) {
   ApplicationIdeaSpec isSatisfiedBy(this) andThen()
   
   private def issueExecute(issue: ApplicationIssue, executor: ApplicationIssue => Unit) {
-    ApplicationIssueSpec isSatisfiedBy(issue) andThen executor(issue)
+    if (ApplicationIdea.exists(ideaId.get) == false)
+      throw new TTsukutterAppException("Issue can not add App Idea not exists. ideaId:" + ideaId.get)
+    
+    ApplicationIssueSpec isSatisfiedBy(issue) andThen {
+      executor(issue)
+      issues = ApplicationIssue.findByIdeaId(ideaId.get)
+    }
   }
 
   def addIssue(issue: ApplicationIssue) {
-    var addIssue = ApplicationIssue(Some(issues.length + 1), issue.description, issue.url, issue.craftmanId)
-    issueExecute(issue, {_ => issues += addIssue})
+    val addIssue = ApplicationIssue(Some(ApplicationIssue.nextSeqNo(ideaId.get)), issue.description, issue.url, issue.craftmanId)
+    issueExecute(addIssue, ApplicationIssue.create(ideaId.get, _))
   }
 
   def updateIssue(issue: ApplicationIssue) {
-    issueExecute(
-      issue,
-      {newValue => issues.update(issues.findIndexOf(target => target.seqNo == newValue.seqNo), newValue)}
-    )
-  }
-}
-
-case class ApplicationIssue(
-                             seqNo: Option[Int] = None,
-                             description: String,
-                             url: String,
-                             craftmanId: Int) {
-}
-
-object ApplicationIdea {
-  val applicationIdea = {
-    get[Long]("IDEA_ID") ~
-    get[Long]("IDEAMAN_ID") ~
-    get[String]("IDEA_DESCRIPTION") map {
-      case ideaId ~ ideamanId ~ ideaDescription =>
-        ApplicationIdea(Some(ideaId), ideamanId, ideaDescription)
-    }
-  }
-  
-  def create(appIdea: ApplicationIdea) {
-    DB.withConnection { implicit c =>
-      SQL("""
-    	insert into T_APPLICATION_IDEA (
-    		IDEA_ID,
-      		IDEAMAN_ID,
-      		IDEA_DESCRIPTION)
-      	values (
-      		{ideaId},
-      		{ideamanId},
-      		{ideaDescription})""")
-      	.on(
-      	    'ideaId -> appIdea.ideaId.get,
-      	    'ideamanId -> appIdea.ideamanId,
-      	    'ideaDescription -> appIdea.description)
-      	.executeUpdate()
-    }
-  }
-  
-  def findById(id: Long) = {
-    (DB.withConnection {implicit c =>
-      SQL("""
-          select * from T_APPLICATION_IDEA
-          where IDEA_ID = {ideaId}""")
-      .on('ideaId -> id)
-      .as(applicationIdea *)
-    }).head
+    issueExecute(issue, ApplicationIssue.update(ideaId.get, _))
   }
 }
 
@@ -108,15 +65,60 @@ object ApplicationIdeaRepository {
 object ApplicationIdeaSpec extends TTSpecification[ApplicationIdea] {
   override def isSatisfiedBy(target: ApplicationIdea) = {
     StringNotNothingSpec("Description", target.description) and
-    	StringLengthSpec(maxLength = 140, name = "Description", target = target.description)
+    StringLengthSpec(maxLength = 140, name = "Description", target = target.description)
   }
 }
 
-object ApplicationIssueSpec extends TTSpecification[ApplicationIssue] {
-  override def isSatisfiedBy(target: ApplicationIssue) = {
-    StringNotNothingSpec("Description", target.description) and
-      StringLengthSpec(maxLength = 140, name = "Description", target = target.description) and
-      StringNotNothingSpec("URL", target.url) and
-      StringLengthSpec(maxLength = 1024, name = "URL", target = target.url)
+// infrastructure layer
+object ApplicationIdea {
+  val applicationIdea = {
+    get[Long]("IDEA_ID") ~
+    get[Long]("IDEAMAN_ID") ~
+    get[String]("IDEA_DESCRIPTION") map {
+      case ideaId ~ ideamanId ~ ideaDescription =>
+        ApplicationIdea(Some(ideaId), ideamanId, ideaDescription)
+    }
+  }
+  
+  val findByIdQuery = SQL("""
+             select * from T_APPLICATION_IDEA
+             where IDEA_ID = {ideaId}""")
+  
+  def create(appIdea: ApplicationIdea) {
+    DB.withConnection { implicit c =>
+      if (exists(appIdea.ideaId.get))
+        throw new TTsukutterAppException("This idea ID is exists:" + appIdea.ideaId.get)
+      
+      SQL("""
+    	insert into T_APPLICATION_IDEA (
+    		IDEA_ID,
+      		IDEAMAN_ID,
+      		IDEA_DESCRIPTION)
+      	values (
+      		{ideaId},
+      		{ideamanId},
+      		{ideaDescription})""")
+      	.on(
+      	    'ideaId -> appIdea.ideaId.get,
+      	    'ideamanId -> appIdea.ideamanId,
+      	    'ideaDescription -> appIdea.description)
+      	.executeUpdate()
+    }
+  }
+  
+  def findById(id: Long) = {
+    (DB.withConnection {implicit c =>
+      findByIdQuery
+      .on('ideaId -> id)
+      .as(applicationIdea *)
+    }).head
+  }
+  
+  def exists(id: Long) = {
+    (DB.withConnection {implicit c =>
+      findByIdQuery
+      .on('ideaId -> id)
+      .as(applicationIdea *).length > 0
+      })
   }
 }
