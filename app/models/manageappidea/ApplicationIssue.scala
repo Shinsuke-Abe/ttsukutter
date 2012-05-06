@@ -13,7 +13,7 @@ case class ApplicationIssue(
                              seqNo: Option[Int] = None,
                              description: String,
                              url: String,
-                             craftmanId: Int) {
+                             craftmanId: Long) {
 }
 
 object ApplicationIssueSpec extends TTSpecification[ApplicationIssue] {
@@ -21,7 +21,8 @@ object ApplicationIssueSpec extends TTSpecification[ApplicationIssue] {
     StringNotNothingSpec("Description", target.description) and
     StringLengthSpec(maxLength = 140, name = "Description", target = target.description) and
     StringNotNothingSpec("URL", target.url) and
-    StringLengthSpec(maxLength = 1024, name = "URL", target = target.url)
+    StringLengthSpec(maxLength = 1024, name = "URL", target = target.url) and
+    UserExistsSpec(target.craftmanId)
   }
 }
 
