@@ -2,16 +2,22 @@ package models.manageuser
 
 import models.specs._
 
-abstract class TTUserAuthInfo()
+abstract class TTUserAuthInfo() {
+  def getAuthInfoTuple:(Int, String, String)
+}
 
-case class OAuthInfo(accessToken: String, tokenSecret: String) extends TTUserAuthInfo
+case class OAuthInfo(accessToken: String, tokenSecret: String) extends TTUserAuthInfo {
+  override def getAuthInfoTuple = (1, accessToken, tokenSecret)
+}
 
-case class RegularAuthInfo(mailAddress: String, passrowd: String) extends TTUserAuthInfo
+case class RegularAuthInfo(mailAddress: String, password: String) extends TTUserAuthInfo {
+  override def getAuthInfoTuple = (2, mailAddress, password)
+}
 
 object RegularAuthInfoSpec extends TTSpecification[RegularAuthInfo] {
   override def isSatisfiedBy(target: RegularAuthInfo) = {
     StringNotNothingSpec("EMail Address", target.mailAddress) and
-    StringNotNothingSpec("Password", target.passrowd)
+    StringNotNothingSpec("Password", target.password)
   }
 }
 
