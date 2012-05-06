@@ -10,14 +10,15 @@ import models.manageuser.TTUser
  * To change this template use File | Settings | File Templates.
  */
 
-class UserExistsSpec extends TTSpecification[TTUser] {
-  override def isSatisfiedBy(target: TTUser) = {
-    SpecificateSuccess
+class UserExistsSpec extends TTSpecification[Long] {
+  override def isSatisfiedBy(target: Long) = {
+    if (TTUser.exists(target)) SpecificateSuccess
+    else SpecificateResult(false, "User is not found. UserId:" + target)
   }
 }
 
 object UserExistsSpec {
-  def apply(target: TTUser) = {
+  def apply(target: Long) = {
     (new UserExistsSpec).isSatisfiedBy(target)
   }
 }

@@ -10,14 +10,15 @@ import models.manageappidea.ApplicationIdea
  * To change this template use File | Settings | File Templates.
  */
 
-class AppIdeaExistsSpec extends TTSpecification[ApplicationIdea] {
-  override def isSatisfiedBy(target: ApplicationIdea) = {
-    SpecificateSuccess
+class AppIdeaExistsSpec extends TTSpecification[Long] {
+  override def isSatisfiedBy(target: Long) = {
+    if (ApplicationIdea.exists(target)) SpecificateSuccess
+    else SpecificateResult(false, "This AppIdea is not found. IdeaId:" + target)
   }
 }
 
 object AppIdeaExistsSpec {
-  def apply(target: ApplicationIdea) = {
+  def apply(target: Long) = {
     (new AppIdeaExistsSpec).isSatisfiedBy(target)
   }
 }
